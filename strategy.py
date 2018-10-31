@@ -2,6 +2,7 @@
 
 from board import *
 from minimax import *
+from rl import *
 
 class Strategy:
 	def __init__(self, player):
@@ -24,3 +25,11 @@ class RandomStrategy(Strategy):
 class MinimaxStrategy(Strategy):
 	def select_move(self, board):
 		return minimax_move(self.player, board)
+
+class ReinforcementLearningStrategy(Strategy):
+	def __init__(self, player):
+		super().__init__(player)
+		self.policy_lookup = dict()
+
+	def select_move(self, board):
+		return self.policy_lookup

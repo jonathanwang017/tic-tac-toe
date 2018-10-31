@@ -13,7 +13,7 @@ num_test = 1000
 iterations = 2000
 batch_size = 10000
 
-# randomly place 3 pieces and check if there is a win
+# randomly place pieces and check if there is a win
 def generate_data(num_samples, min_pieces):
 	data = []
 	labels = []

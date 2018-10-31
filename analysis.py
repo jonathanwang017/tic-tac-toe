@@ -2,6 +2,7 @@
 
 from board import *
 from strategy import *
+from minimax import *
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -35,4 +36,14 @@ def minimax_random():
 def random_minimax():
 	simulate_winner(RandomStrategy(1), MinimaxStrategy(2))
 
-random_random()
+def minimax_alphabeta():
+	board = Board()
+	minimax_count = minimax_counter(1, board, prune=False)
+	alphabeta_count = minimax_counter(1, board)
+	plt.bar([0, 1], [minimax_count, alphabeta_count])
+	plt.xticks([0, 1], ('Minimax', 'Alphabeta'))
+	plt.show()
+
+
+
+minimax_alphabeta()

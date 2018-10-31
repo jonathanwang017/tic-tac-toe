@@ -9,6 +9,14 @@ class Board:
 	def draw_board(self):
 		print(self.grid)
 
+	def flatten(self):
+		return np.array2string(self.grid.flatten(), separator='')[1:-1]
+
+	def expand(self, string):
+		for i in range(3):
+			for j in range(3):
+				self.grid[i, j] = string[i * 3 + j]
+
 	def clear_board(self):
 		self.grid = np.zeros((3, 3)).astype(int)
 

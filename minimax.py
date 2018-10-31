@@ -2,7 +2,9 @@
 # Includes counter functionality to compare search space of minimax with and without pruning
 from board import *
 
-# counter = 0
+# count total number of boards checked 
+# some branches end early due to a player winning
+counter = 0
 
 def compute_score(board):
 	if board.check_win(1):
@@ -13,8 +15,8 @@ def compute_score(board):
 
 
 def minimax(player, board):
-	# global counter
-	# counter += 1
+	global counter
+	counter += 1
 	# get score at final state
 	if board.check_end(): # add depth constraint for non-final scores
 		return compute_score(board), None
@@ -37,11 +39,11 @@ def minimax(player, board):
 		return np.min(open_scores), open_spaces[np.argmin(open_scores)]
 
 
-def alphabeta(player, board, alpha, beta):
-	# global counter
-	# counter += 1
+def alphabeta(player, board, alpha=-float('inf'), beta=float('inf')):
+	global counter
+	counter += 1
 	# get score at final state
-	if board.check_end(): # add depth constraint for non-final scores
+	if board.check_end(): # TODO: add depth constraint for non-final scores
 		return compute_score(board), None
 
 	if player == 1:
@@ -74,10 +76,18 @@ def alphabeta(player, board, alpha, beta):
 	return best_score, best_move
 	
 
-def minimax_move(player, board):
-	# global counter
-	# counter = 0
-	# best_score, best_move = minimax(player, board)
-	best_score, best_move = alphabeta(player, board, -float('inf'), float('inf'))
-	# print(counter)
+def minimax_move(player, board, prune=True):
+	if prune:
+		best_score, best_move = alphabeta(player, board)
+	else:
+		best_score, best_move = minimax(player, board) 
 	return best_move
+
+def minimax_counter(player, board, prune=True):
+	global counter
+	counter = 0
+	if prune:
+		best_score, best_move = alphabeta(player, board)
+	else:
+		best_score, best_move = minimax(player, board) 
+	return counter
