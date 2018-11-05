@@ -1,14 +1,23 @@
 # Create proxy metric for board score based on winning statistics
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
 
-from board import *
-from strategy import *
+from base.board import *
+from base.strategy import *
 
 # TODO: build and train CNN to learn board score
 
-num_train = 10000
+# directory to save plots
+images_dir = '../../images'
 
+# training parameters
+num_train = 10000
+num_test = 1000
 
 def generate_score_data(num_samples):
+	"""Generate dataset of game states with probability of each outcome"""
+
 	# key: string representing board
 	# value: (ties, player1 wins, player2 wins)
 	board_score_lookup = dict()
@@ -40,6 +49,7 @@ def generate_score_data(num_samples):
 	data = []
 	labels = []
 
+	# format data as nx3x3 (boards) and nx2 (outcome probabilities) arrays
 	for board_string in board_score_lookup.keys():
 		board = Board()
 		board.expand(board_string)

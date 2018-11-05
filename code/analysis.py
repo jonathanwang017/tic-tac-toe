@@ -4,6 +4,8 @@ import numpy as np
 from base.board import *
 from base.player import *
 from strategies.minimax import *
+from util_cnn import winner
+from util_cnn import score
 
 """
 This file contains various functions to analyze different game scenarios.
@@ -56,5 +58,5 @@ def minimax_alphabeta():
 	plt.xticks([0, 1], ('Minimax', 'Alphabeta'))
 	plt.show()
 
-
-minimax_alphabeta()
+def train_winner_cnn():
+	winner.train_model()
