@@ -1,20 +1,23 @@
-# Search game tree and use minimax to determine best move
-# Includes counter functionality to compare search space of minimax with and without pruning
-from board import *
+"""
+Search game tree and use minimax to determine the best move. This file 
+includes counter functionality to compare the search space of minimax 
+with and without pruning.
+"""
 
 # count total number of boards checked 
 # some branches end early due to a player winning
 counter = 0
 
 def compute_score(board):
+	"""Return inf if player 1 wins and -inf if player 2 wins"""
 	if board.check_win(1):
 		return float('inf')
 	if board.check_win(2):
 		return -float('inf')
 	return 0
 
-
 def minimax(player, board):
+	"""Select best move using minimax without pruning"""
 	global counter
 	counter += 1
 	# get score at final state
@@ -26,8 +29,7 @@ def minimax(player, board):
 	open_scores = []
 	for move in open_spaces:
 		# try making move
-		next_board = Board()
-		next_board.grid = board.grid.copy()
+		next_board = board.copy()
 		next_board.add_piece(player, move[0], move[1])
 		# get score and best opponent move for simulated state
 		next_score, next_move = minimax(3 - player, next_board)
@@ -40,6 +42,7 @@ def minimax(player, board):
 
 
 def alphabeta(player, board, alpha=-float('inf'), beta=float('inf')):
+	"""Select best move using minimax with alphabeta pruning"""
 	global counter
 	counter += 1
 	# get score at final state
@@ -57,8 +60,7 @@ def alphabeta(player, board, alpha=-float('inf'), beta=float('inf')):
 	best_move = None
 	for move in open_spaces:
 		# try making move
-		next_board = Board()
-		next_board.grid = board.grid.copy()
+		next_board = board.copy()
 		next_board.add_piece(player, move[0], move[1])
 		# get score and best opponent move for simulated state
 		next_score, next_move = alphabeta(3 - player, next_board, alpha, beta)
@@ -75,8 +77,8 @@ def alphabeta(player, board, alpha=-float('inf'), beta=float('inf')):
 
 	return best_score, best_move
 	
-
 def minimax_move(player, board, prune=True):
+	"""Call appropriate minimax function with or without pruning"""
 	if prune:
 		best_score, best_move = alphabeta(player, board)
 	else:
@@ -84,6 +86,7 @@ def minimax_move(player, board, prune=True):
 	return best_move
 
 def minimax_counter(player, board, prune=True):
+	"""Count search space for minimax function with or without pruning"""
 	global counter
 	counter = 0
 	if prune:

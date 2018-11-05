@@ -1,15 +1,21 @@
-# Loop over game until game ends
+from base.board import *
+from base.player import *
 
-from board import *
-from strategy import *
+"""
+This file is an entry point to the game. It creates a Board and two
+Players and iterates the game loop until the game ends.
+"""
 
+# create board and players
 board = Board()
 player1 = MinimaxStrategy(1)
 player2 = MinimaxStrategy(2)
 
+# set player 1 to start
 turn = 1
 
 board.draw_board()
+# loop game until game end
 while not board.check_end():
 	if turn == 1:
 		player1.play_move(board)

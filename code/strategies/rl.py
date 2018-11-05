@@ -1,5 +1,4 @@
 # Use reinforcement learning to explore moves and learn optimal policy
-from board import *
 
 # play games to explore moves and learn policy
 def learn_policy(policy_lookup):
