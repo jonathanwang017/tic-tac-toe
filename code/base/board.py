@@ -25,6 +25,10 @@ class Board:
 			for j in range(3):
 				self.grid[i, j] = string[i * 3 + j]
 
+	def isolate(self):
+		"""Convert board to two channels - one for each player"""
+		return (np.arange(2) == self.grid[..., None] - 1).astype(int)
+
 	def copy(self):
 		"""Create a copy of this board"""
 		new_board = Board()

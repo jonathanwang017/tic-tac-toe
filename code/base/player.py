@@ -1,3 +1,5 @@
+import numpy as np
+
 from strategies.minimax import *
 from strategies.rl import *
 

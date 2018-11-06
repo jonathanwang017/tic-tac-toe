@@ -3,15 +3,15 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from base.board import *
-from base.strategy import *
+from base.player import *
 
 """
 This file contains functions to generate random game data and train a 
 CNN to determine if a player has won.
 """
 
-# directory to save plots
-images_dir = '../../images'
+# directory to save plots - relative to analysis.py entry point
+images_dir = '../images/'
 
 # training parameters
 num_train = 10000
@@ -19,7 +19,7 @@ num_test = 1000
 iterations = 2000
 batch_size = 10000
 
-def generate_data(num_samples, min_pieces):
+def generate_winner_data(num_samples, min_pieces):
 	"""Generate labelled random game data""" 
 	data = []
 	labels = []
@@ -41,8 +41,15 @@ def conv2d(x, w):
 	"""Perform convolution of w on x"""
 	return tf.nn.conv2d(x, w, strides=[1, 1, 1, 1], padding='VALID')
 
-def train_model():
+def train_winner_model():
 	"""Train CNN to determine if a player has won"""
+
+	# generate data 
+	# NOTE: test data has different distribution since train data boards
+	# have minimum of 3 pieces. weights learned from train data generalize
+	# to test data even with different distribution
+	train_data, train_labels = generate_winner_data(num_train, 3)
+	test_data, test_labels = generate_winner_data(num_test, 0)
 
 	# build model
 	# convolutional filters should learn each winning pattern. convolution
@@ -59,13 +66,6 @@ def train_model():
 	w_fc = tf.constant(20., shape=[8, 1])
 	b_fc = tf.constant(-10., shape=[1])
 	y_pred = tf.nn.sigmoid(tf.matmul(h_flat, w_fc) + b_fc)
-
-	# generate data 
-	# NOTE: test data has different distribution since train data boards
-	# have minimum of 3 pieces. weights learned from train data generalize
-	# to test data even with different distribution
-	train_data, train_labels = generate_data(num_train, 3)
-	test_data, test_labels = generate_data(num_test, 0)
 
 	# set up optimization
 	loss = tf.reduce_mean(tf.losses.sigmoid_cross_entropy(y, y_pred))
@@ -89,7 +89,7 @@ def train_model():
 		plt.imshow(weights.squeeze(), cmap='gray')
 		pos += 1
 	# plt.show()
-	plt.savefig(images_dir + 'cnn_winner_weights_initial.pdf')
+	plt.savefig(images_dir + 'winner_cnn_weights_initial.pdf')
 	plt.close()
 
 	# save training history
@@ -135,7 +135,7 @@ def train_model():
 		plt.imshow(weights.squeeze(), cmap='gray')
 		pos += 1
 	# plt.show()
-	plt.savefig(images_dir + 'cnn_winner_weights_trained.pdf')
+	plt.savefig(images_dir + 'winner_cnn_weights_trained.pdf')
 	plt.close()
 
 	# plot learning history
@@ -143,14 +143,14 @@ def train_model():
 	plt.plot(train_step, test_accuracy, label='test accuracy')
 	plt.title('CNN Accuracy')
 	plt.legend()
-	plt.savefig(images_dir + 'cnn_learning_history_accuracy.pdf')
+	plt.savefig(images_dir + 'winner_cnn_learning_history_accuracy.pdf')
 	plt.close()
 
 	plt.plot(train_step, train_loss, label='train loss')
 	plt.plot(train_step, test_loss, label='test loss')
 	plt.title('CNN Cross Entropy Loss')
 	plt.legend()
-	plt.savefig(images_dir + 'cnn_learning_history_loss.pdf')
+	plt.savefig(images_dir + 'winner_cnn_learning_history_loss.pdf')
 	plt.close()
 
 	sess.close()

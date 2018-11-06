@@ -4,8 +4,8 @@ import numpy as np
 from base.board import *
 from base.player import *
 from strategies.minimax import *
-from util_cnn import winner
-from util_cnn import score
+from util_cnn.winner import *
+from util_cnn.score import *
 
 """
 This file contains various functions to analyze different game scenarios.
@@ -59,4 +59,11 @@ def minimax_alphabeta():
 	plt.show()
 
 def train_winner_cnn():
-	winner.train_model()
+	"""Train CNN to identify if player has won board"""
+	train_winner_model()
+
+def train_score_cnn():
+	"""Train CNN to identify chanes of each player winning board"""
+	train_score_model()
+
+train_score_cnn()
