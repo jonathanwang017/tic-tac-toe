@@ -7,10 +7,10 @@ Before we can test algorithms to run the game, we need to create the game itself
 ### Identifying a Winning Board
 As a warmup, we train a CNN to determine whether a player has won a game. This is a fairly simple deterministic task, but we can nevertheless use data-driven methods to learn this rule. An added benefit is that we can easily verify whether the CNN has properly learned how to perform this task.
 
-##### Generating Winner Data
+#### Generating Winner Data
 The first step to a data-driven solution is to get the data. Since this task is symmetric for each player, we will create a dataset from a single player perspective. We randomly place 3 to 5 pieces on the board and check for a win by checking every possible win orientation (8 total). We thus have a dataset of nx3x3x1 features and nx1 labels.
 
-##### Training the Winner CNN
+#### Training the Winner CNN
 Since this is a task that we can hard code, we can structure the CNN to learn that hard coding. Specifically, we will have 8 filters, each of which will learn one win condition (3 horizontal, 3 vertical, 2 diagonal). We will also fix the convolutional bias as well as the fully connected weights and bias to normalize the outputs for easier prediction. In this model, the only variables will be the 8 filters being learned. The figure below outlines the architecture structure (placeholder). 
 
 ![winner_cnn_architecture]
@@ -28,7 +28,13 @@ With the convolution and bias, a filter will output 1 if the input matched that 
 ![winner_activations]
 ![not_winner_activations]
 
+### Scoring a Board
+A more challenging task is quantifying a game state. At the end of a game, the score can be decided simply by which player won or if there was a tie. However, an intermediate board state is much harder to score. A proxy value we decided on is the statistics of a player winning from a board state. We can then train a CNN to predict this score for each player.
 
+#### Generating Score Data
+This task is no longer symmetric for the players, so we will simulate games between two players. For each game, we collect all the board states of the game and label them with the final winner. This is stored in a dictionary of board:(ties, player 1 wins, player 2 wins), thus tracking the witnessed outcomes of each board state. For the prediction task, we split the board into two channels, one for each player. We normalize the outcome statistics by dividing by the total outcomes for a board and only consider the outcomes where a player wins. The resulting dataset consists of nx3x3x2 features and nx2 labels.
+
+#### Training the Score CNN
 
 
 
