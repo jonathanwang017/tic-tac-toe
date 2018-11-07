@@ -45,13 +45,15 @@ The resulting trained weights show an interesting, but predictable pattern. The 
 
 For the model training, we use the Adadelta optimzer with learning rate 10 again. Our loss function is L2 loss, and we optimize for 10000 iterations over the full training dataset.
 
-We can simulate a game, and examine the predicted scores to determine whether the model learned a reasonable scoring function. In the images, a black space is empty; gray is a player 1 piece; and white is a player 2 piece. At the very start, the empty board state has a higher score for player 1 since the first player has a better chance of winning. On turn 4, when player 1 is on the verge of winning, player 1 has a very high score. However, the player 1 score drops, when the random move doesn't win, and the player 2 score jumps up when it blocks the player 1 win. The game ends with a tie, where both players have low score, since neither can win.
+We can simulate a game, and examine the predicted scores to determine whether the model learned a reasonable scoring function. In the images, a black space is empty; gray is a player 1 piece; and white is a player 2 piece.
 
 | Turn           | 0        | 1        | 2        | 3        | 4        | 5        | 6        | 7        | 8        | 9        |
 |:--------------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
 | Board State    | ![turn0] | ![turn1] | ![turn2] | ![turn3] | ![turn4] | ![turn5] | ![turn6] | ![turn7] | ![turn8] | ![turn9] |
 | Player 1 Score | 0.568    | 0.576    | 0.539    | 0.573    | 0.744    | 0.485    | 0.214    | 0.063    | 0.116    | 0.127    |
 | Player 2 Score | 0.291    | 0.281    | 0.313    | 0.337    | 0.117    | 0.314    | 0.510    | 0.201    | 0.403    | 0.028    |
+
+At the very start, the empty board state has a higher score for player 1 since the first player has a better chance of winning. On turn 4, when player 1 is on the verge of winning, player 1 has a very high score. However, the player 1 score drops, when the random move doesn't win, and the player 2 score jumps up when it blocks the player 1 win. The game ends with a tie, where both players have low score, since neither can win.
 
 
 
