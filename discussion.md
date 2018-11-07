@@ -69,13 +69,13 @@ We can simulate a game, and examine the predicted scores to determine whether th
 [score_cnn_weights_1_trained]: diagrams/score_cnn_weights_1_trained.png
 [score_cnn_weights_2_trained]: diagrams/score_cnn_weights_2_trained.png
 
-[turn0]: images/score_example/turn0.png
-[turn1]: images/score_example/turn1.png
-[turn2]: images/score_example/turn2.png
-[turn3]: images/score_example/turn3.png
-[turn4]: images/score_example/turn4.png
-[turn5]: images/score_example/turn5.png
-[turn6]: images/score_example/turn6.png
-[turn7]: images/score_example/turn7.png
-[turn8]: images/score_example/turn8.png
-[turn9]: images/score_example/turn9.png
+[turn0]: diagrams/score_example/turn0.png
+[turn1]: diagrams/score_example/turn1.png
+[turn2]: diagrams/score_example/turn2.png
+[turn3]: diagrams/score_example/turn3.png
+[turn4]: diagrams/score_example/turn4.png
+[turn5]: diagrams/score_example/turn5.png
+[turn6]: diagrams/score_example/turn6.png
+[turn7]: diagrams/score_example/turn7.png
+[turn8]: diagrams/score_example/turn8.png
+[turn9]: diagrams/score_example/turn9.png
