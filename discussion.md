@@ -29,8 +29,14 @@ With the convolution and bias, a filter will output 1 if the input matched that 
 ![not_winner_activations]
 
 
-[winner_cnn_architecture]: diagrams/winner_cnn_architecture.jpg
+
+
+
+
+
+
+[winner_cnn_architecture]: diagrams/winner_cnn_architecture.JPG
 [winner_cnn_weights_initial]: diagrams/winner_cnn_weights_initial.png
 [winner_cnn_weights_trained]: diagrams/winner_cnn_weights_trained.png
-[winner_activations]: diagrams/winner_activations.jpg
-[not_winner_activations]: diagrams/not_winner_activations.jpg
+[winner_activations]: diagrams/winner_activations.JPG
+[not_winner_activations]: diagrams/not_winner_activations.JPG
