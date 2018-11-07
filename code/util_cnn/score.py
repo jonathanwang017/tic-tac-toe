@@ -1,4 +1,3 @@
-# Create proxy metric for board score based on winning statistics
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -6,89 +5,70 @@ import tensorflow as tf
 from base.board import *
 from base.player import *
 
-# TODO: build and train CNN to learn board score
+"""
+This file contains functions to generate random game data for two players
+and train a CNN to determine the score for each player given a board state.
+The score is derived from the probability of each player winning from a
+board state.
+"""
 
 # directory to save plots - relative to analysis.py entry point
 images_dir = '../images/'
-# directory to save generated data - relative to analysis.py entry point
-data_dir = '../data/'
+# directory to save models - relative to analysis.py entry point
+model_dir = '../models/'
 
 # training parameters
 num_train = 100000
 num_test = 10000
+num_val = 10
 iterations = 10000
 
 def generate_score_data(num_samples):
 	"""Generate dataset of game states with probability of each outcome"""
-	try:
-		# try loading data if it has already been generated
-		data = np.load(data_dir + 'score_data.npy')
-		labels = np.load(data_dir + 'score_labels.npy')
-	except:
-		# key: string representing board
-		# value: (ties, player1 wins, player2 wins)
-		board_score_lookup = dict()
+	
+	# key: string representing board
+	# value: (ties, player1 wins, player2 wins)
+	board_score_lookup = dict()
 
-		player1 = RandomStrategy(1)
-		player2 = RandomStrategy(2)
+	player1 = RandomStrategy(1)
+	player2 = RandomStrategy(2)
 
-		# num_samples is the number of games simulated
-		# not necessarily the data dimension
-		for i in range(num_samples):
-			board = Board()
+	# num_samples is the number of games simulated
+	# not necessarily the data dimension
+	for i in range(num_samples):
+		board = Board()
 
-			turn = 1
-			board_states = []
-			# generate random game - record each board state in game
-			while not board.check_end():
-				board_states.append(board.flatten())
-				if turn == 1:
-					player1.play_move(board)
-					turn = 2
-				elif turn == 2:
-					player2.play_move(board)
-					turn = 1
+		turn = 1
+		board_states = []
+		# generate random game - record each board state in game
+		while not board.check_end():
+			board_states.append(board.flatten())
+			if turn == 1:
+				player1.play_move(board)
+				turn = 2
+			elif turn == 2:
+				player2.play_move(board)
+				turn = 1
+		board_states.append(board.flatten())
 
-			# mark game winner for each board state in game
-			for board_string in board_states:
-				if board_string not in board_score_lookup:
-					board_score_lookup[board_string] = [0, 0, 0]
-				board_score_lookup[board_string][board.get_winner()] += 1
+		# mark game winner for each board state in game
+		for board_string in board_states:
+			if board_string not in board_score_lookup:
+				board_score_lookup[board_string] = [0, 0, 0]
+			board_score_lookup[board_string][board.get_winner()] += 1
 
-		data = []
-		labels = []
-
-		# format data as nx3x3 (boards) and nx2 (outcome probabilities) arrays
-		for board_string in board_score_lookup.keys():
-			board = Board()
-			board.expand(board_string)
-			data.append(board.isolate())
-
-			winners = np.array(board_score_lookup[board_string])
-			ties, player1_wins, player2_wins = winners / np.sum(winners)
-			labels.append([player1_wins, player2_wins])
-
-		data = np.array(data)
-		labels = np.array(labels)
-
-		# save generated data 
-		np.save(data_dir + 'score_data.npy', data)
-		np.save(data_dir + 'score_labels.npy', labels)
-
-	return data, labels
-
-def generate_validation_data():
-	"""Manually create a board to validate model"""
 	data = []
 	labels = []
-	board = Board()
-	board.add_piece(1, 1, 1)
-	board.add_piece(2, 0, 0)
-	board.add_piece(1, 1, 0)
-	board.add_piece(2, 2, 1)
-	# board.add_piece(1, 1, 2)
-	data.append(board.isolate())
-	labels.append([1, 0])
+
+	# format data as nx3x3 (boards) and nx2 (outcome probabilities) arrays
+	for board_string in board_score_lookup.keys():
+		board = Board()
+		board.expand(board_string)
+		data.append(board.isolate())
+
+		winners = np.array(board_score_lookup[board_string])
+		ties, player1_wins, player2_wins = winners / np.sum(winners)
+		labels.append([player1_wins, player2_wins])
 
 	return np.array(data), np.array(labels)
 
@@ -102,20 +82,19 @@ def train_score_model():
 	# generate data 
 	train_data, train_labels = generate_score_data(num_train)
 	test_data, test_labels = generate_score_data(num_test)
-	val_data, val_labels = generate_validation_data()
 
 	# build model
-	x = tf.placeholder(tf.float32, [None, 3, 3, 2])
-	y = tf.placeholder(tf.float32, [None, 2])
+	x = tf.placeholder(tf.float32, [None, 3, 3, 2], name='x')
+	y = tf.placeholder(tf.float32, [None, 2], name='y')
 
-	w_conv = tf.Variable(tf.truncated_normal([3, 3, 2, 32], stddev=0.1))
-	b_conv = tf.Variable(tf.constant(0.1, shape=[32]))
-	h_conv = tf.nn.relu(conv2d(x, w_conv) + b_conv)
+	w_conv = tf.Variable(tf.truncated_normal([3, 3, 2, 32], stddev=0.1), name='w_conv')
+	b_conv = tf.Variable(tf.constant(0.1, shape=[32]), name='b_conv')
+	h_conv = tf.nn.relu(conv2d(x, w_conv) + b_conv, name='h_conv')
 	
-	h_flat = tf.reshape(h_conv, [-1, 32])
-	w_fc = tf.Variable(tf.truncated_normal(shape=[32, 2], stddev=0.1))
-	b_fc = tf.Variable(tf.constant(0.1, shape=[2]))
-	y_pred = tf.add(tf.matmul(h_flat, w_fc), b_fc)
+	h_flat = tf.reshape(h_conv, [-1, 32], name='h_flat')
+	w_fc = tf.Variable(tf.truncated_normal(shape=[32, 2], stddev=0.1), name='w_fc')
+	b_fc = tf.Variable(tf.constant(0.1, shape=[2]), name='b_fc')
+	y_pred = tf.add(tf.matmul(h_flat, w_fc), b_fc, name='y_pred')
 	
 	# set up optimization
 	loss = tf.reduce_mean(tf.square(y - y_pred))
@@ -146,8 +125,9 @@ def train_score_model():
 		# train on all data since batch size is difficult to anticipate
 		optimizer.run(feed_dict={x: train_data, y: train_labels})
 
-	# print scores on validation sample
-	print(y_pred.eval(feed_dict={x: val_data, y: val_labels}))
+	# save model
+	tf.saved_model.simple_save(sess, model_dir + 'score_model', 
+		inputs={'x': x, 'y': y}, outputs={'y_pred': y_pred})
 
 	# plot trained weights
 	fig = plt.figure()
@@ -180,4 +160,27 @@ def train_score_model():
 	plt.close()
 
 	sess.close()
-				
+
+def load_score_model():
+	"""Load graph of trained score model"""
+	with tf.Session(graph=tf.Graph()) as sess:
+		tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], 
+			model_dir + 'score_model')
+		graph = tf.get_default_graph()
+		x = graph.get_tensor_by_name('x:0')
+		y = graph.get_tensor_by_name('y:0')
+		y_pred = graph.get_tensor_by_name('y_pred:0')
+
+def predict_score_model(data=None, labels=None):
+	"""Use trained score model to score board"""
+	
+	# generate sample data if none supplied
+	if data is None and labels is None:
+		data, labels = generate_score_data(1)
+
+	# use tf predictor api on trained model
+	predict_fn = tf.contrib.predictor.from_saved_model(model_dir + 'score_model')
+	y_pred = predict_fn({'x': data, 'y': labels})['y_pred']
+	for board, label, pred in zip(data, labels, y_pred):
+		board = board[:, :, 0] + 2 * board[:, :, 1]
+		print(board, label, pred)

@@ -58,12 +58,10 @@ def minimax_alphabeta():
 	plt.xticks([0, 1], ('Minimax', 'Alphabeta'))
 	plt.show()
 
-def train_winner_cnn():
-	"""Train CNN to identify if player has won board"""
-	train_winner_model()
+def test_winner_cnn():
+	"""Identify if player has won board on sample data"""
+	predict_winner_model()
 
-def train_score_cnn():
-	"""Train CNN to identify chanes of each player winning board"""
-	train_score_model()
-
-train_score_cnn()
+def test_score_cnn():
+	"""Identify chances of each player winning board on sample data"""
+	predict_score_model()
