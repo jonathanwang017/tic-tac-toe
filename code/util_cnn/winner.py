@@ -175,7 +175,7 @@ def predict_winner_model(data=None, labels=None):
 	
 	# generate sample data if none supplied
 	if data is None and labels is None:
-		data, labels = generate_winner_data(num_val, 3)
+		data, labels = generate_winner_data(num_val, 0)
 
 	# use tf predictor api on trained model
 	predict_fn = tf.contrib.predictor.from_saved_model(model_dir + 'winner_model')
