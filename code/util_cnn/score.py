@@ -181,6 +181,16 @@ def predict_score_model(data=None, labels=None):
 	# use tf predictor api on trained model
 	predict_fn = tf.contrib.predictor.from_saved_model(model_dir + 'score_model')
 	y_pred = predict_fn({'x': data, 'y': labels})['y_pred']
+	turn = 0
 	for board, label, pred in zip(data, labels, y_pred):
 		board = board[:, :, 0] + 2 * board[:, :, 1]
+		# # plot board
+		# plt.figure(figsize=(1,1))
+		# plt.axis('off')
+		# plt.imshow(board - 1, cmap='gray', vmin=-1, vmax=1)
+		# plt.savefig(images_dir + 'score_example/turn' + str(turn) + '.png')
+		# plt.close()
+		# plt.show()
+		print('Turn ' + str(turn))
 		print(board, label, pred)
+		turn += 1

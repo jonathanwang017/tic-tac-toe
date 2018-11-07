@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Board:
 	"""
@@ -14,6 +15,19 @@ class Board:
 	def draw_board(self):
 		"""Display board values"""
 		print(self.grid)
+
+	def plot_board(self, filename=None):
+		"""Plot board and save if filename is supplied"""
+		plt.figure(figsize=(1,1))
+		plt.axis('off')
+		# convert grid to [-1, 1] where -1 is empty, 
+		# 0 is player 1 and 1 is player 2
+		plt.imshow(self.grid - 1, cmap='gray', vmin=-1, vmax=1)
+		if filename is None:
+			plt.show()
+		else:
+			plt.savefig(filename)
+			plt.close()
 
 	def flatten(self):
 		"""Return board as string representation"""
