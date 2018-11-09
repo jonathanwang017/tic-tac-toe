@@ -8,25 +8,25 @@ Players and iterates the game loop until the game ends.
 
 # create board and players
 board = Board()
-player1 = MinimaxStrategy(1)
-player2 = MinimaxStrategy(2)
+player1 = ReinforcementLearningStrategy(1)
+# player2 = MinimaxStrategy(2)
 
 # set player 1 to start
-turn = 1
+# turn = 1
 
-board.draw_board()
-# loop game until game end
-while not board.check_end():
-	if turn == 1:
-		player1.play_move(board)
-		turn = 2
-	elif turn == 2:
-		player2.play_move(board)
-		turn = 1
+# board.draw_board()
+# # loop game until game end
+# while not board.check_end():
+# 	if turn == 1:
+# 		player1.play_move(board)
+# 		turn = 2
+# 	elif turn == 2:
+# 		player2.play_move(board)
+# 		turn = 1
 
-	board.draw_board()
+# 	board.draw_board()
 
-print(board.get_winner())
+# print(board.get_winner())
 
 # board.add_piece(1, 1, 1)
 # board.add_piece(2, 0, 0)

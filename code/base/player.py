@@ -58,6 +58,7 @@ class ReinforcementLearningStrategy(Strategy):
 		"""Learn optimal policy"""
 		super().__init__(player)
 		self.policy_lookup = dict()
+		learn_policy(self.policy_lookup)
 
 	def select_move(self, board):
 		"""Select move by looking up board state in policy lookup"""
