@@ -4,6 +4,7 @@ import numpy as np
 from base.board import *
 from base.player import *
 from strategies.minimax import *
+from strategies.rl import *
 from util_cnn.winner import *
 from util_cnn.score import *
 
@@ -34,7 +35,8 @@ def simulate_winner(player1, player2):
 
 		winners.append(board.get_winner())
 	# plot results of games
-	plt.hist(winners)
+	plt.hist(winners, range=(0, 2))
+	plt.title(player1.strategy_name + ' vs ' + player2.strategy_name)
 	plt.show()
 
 def random_random():
@@ -48,6 +50,14 @@ def minimax_random():
 def random_minimax():
 	"""Compare player 1 random and player 2 minimax"""
 	simulate_winner(RandomStrategy(1), MinimaxStrategy(2))
+
+def rl_random():
+	"""Compare player 1 reinforcement learning and player 2 random"""
+	simulate_winner(ReinforcementLearningStrategy(1), RandomStrategy(2))
+
+def random_rl():
+	"""Compare player 1 random and player 2 reinforcement learning"""
+	simulate_winner(RandomStrategy(1), ReinforcementLearningStrategy(2))
 
 def minimax_alphabeta():
 	"""Compare and plot the search space of minimax with and without pruning""" 
@@ -65,3 +75,21 @@ def test_winner_cnn():
 def test_score_cnn():
 	"""Identify chances of each player winning board on sample data"""
 	predict_score_model()
+
+def test_rl_policy():
+	"""Examine policy values of board states in a game"""
+	board = Board()
+	player1 = ReinforcementLearningStrategy(1)
+	player2 = ReinforcementLearningStrategy(2)
+	turn = 1
+	while not board.check_end():
+		if turn == 1:
+			board.draw_board()
+			print(visualize_policy(player1.policy_lookup, board, turn))
+			player1.play_move(board)
+			turn = 2
+		elif turn == 2:
+			board.draw_board()
+			print(visualize_policy(player2.policy_lookup, board, turn))
+			player2.play_move(board)
+			turn = 1

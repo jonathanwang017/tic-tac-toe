@@ -1,35 +1,60 @@
 import numpy as np
+import pickle
+import random
 
 from base.board import *
 
+"""
+This file contains functions to learn an optimal policy using Q-learning.
+The game is played randomly and policy values are updated according to the
+rewards, where a reward of +1 is given for a player 1 win and a reward of -1
+for a player 2 win. All other states have a reward of 0.
+
+The game between two reinforcement strategy players will almost always
+be the same since the policy is saved and loaded and there is almost no
+randomness in the policy exploitation function. We can either re-learn the
+policy every time or add some randomness (epsilon) when selecting policy
+exploitation moves.
+"""
+
+# directory to save models - relative to analysis.py entry point
+model_dir = '../models/rl_model/'
+
 discount = 1
-learning_rate = 0.1
+learning_rate = 0.01
+epsilon = 0.8
+iterations = 50000
 
 def learn_policy(policy_lookup):
 	"""Play games to learn optimal policy"""
-	# epsilon = 1
-	for i in range(10000):
-		board = Board()
-		turn = 1
-		visualize_policy(policy_lookup, board, turn)
-		while not board.check_end():
-			state = board.flatten()
-			# if np.random.random() > epsilon:
-			# 	action = exploit_policy(policy_lookup, board, turn)
-			# else:
-			action = explore_policy(board)
-
-			board.add_piece(turn, action[0], action[1])
-
-			next_state = board.flatten()
-			reward = get_reward(board)
-
-			update_policy_values(
-				policy_lookup, board, state, turn, action, next_state, reward)
-
-			turn = 3 - turn
-
-		# epsilon = max(0, epsilon - 0.05)
+	try:
+		# try loading policy lookup if already learned
+		with open(model_dir + 'rl_policy.pickle', 'rb') as model:
+			loaded_policy = pickle.load(model)
+			for state in loaded_policy.keys():
+				policy_lookup[state] = loaded_policy[state]
+	except:
+		for i in range(iterations):
+			board = Board()
+			turn = 1
+			print(visualize_policy(policy_lookup, board, turn))
+			# play game and update policy values based on reward
+			while not board.check_end():
+				state = board.flatten()
+				# select policy based move or random move with epsilon probability
+				if np.random.random() > epsilon:
+					action = exploit_policy(policy_lookup, board, turn)
+				else:
+					action = explore_policy(board)
+				board.add_piece(turn, action[0], action[1])
+				next_state = board.flatten()
+				reward = get_reward(board)
+				update_policy_values(
+					policy_lookup, board, state, turn, action, next_state, reward)
+				turn = 3 - turn
+		# pickle policy lookup
+		with open(model_dir + 'rl_policy.pickle', 'wb') as model:
+			pickle.dump(policy_lookup, model)
 	
 def explore_policy(board):
 	"""Select random move"""
@@ -37,13 +62,15 @@ def explore_policy(board):
 	rand_ind = np.random.randint(len(open_spaces))
 	return open_spaces[rand_ind]
 	
-		
 def exploit_policy(policy_lookup, board, player):
-	"""Select moves based on policy and evaluate rewards"""
+	"""Select best move based on policy"""
 	state = board.flatten()
 	best_value = None
 	best_action = None
-	for action in board.get_open():
+	# look up policy action values for all possible moves (shuffled)
+	actions_list = board.get_open()
+	random.shuffle(actions_list)
+	for action in actions_list:
 		value = get_policy_value(policy_lookup, state, player, action)
 		if (best_action is None or 
 			player == 1 and value > best_value or
@@ -55,8 +82,10 @@ def exploit_policy(policy_lookup, board, player):
 def get_reward(board):
 	"""Return reward for board state"""
 	if board.check_end():
+		# +1 if player 1 wins
 		if board.get_winner() == 1:
 			return 1
+		# -1 if player 2 wins
 		elif board.get_winner() == 2:
 			return -1
 		else:
@@ -66,6 +95,8 @@ def get_reward(board):
 
 def update_policy_values(policy_lookup, board, state, player, action, next_state, reward):
 	"""Update policy values with Bellman equation"""
+	
+	# compute total expected reward including future rewards
 	if board.check_end():
 		expected = reward
 	else:
@@ -73,7 +104,9 @@ def update_policy_values(policy_lookup, board, state, player, action, next_state
 			expected = reward + discount * min_value(policy_lookup, next_state, 2)
 		elif player == 2:
 			expected = reward + discount * max_value(policy_lookup, next_state, 1)
+	# get current policy action value
 	policy_value = get_policy_value(policy_lookup, state, player, action)
+	# update policy action value
 	policy_lookup[(state, player)][action] += learning_rate * (expected - policy_value)
 
 def get_policy_actions(policy_lookup, state, player):
@@ -114,4 +147,4 @@ def visualize_policy(policy_lookup, board, player):
 	for action in board.get_open():
 		board_policy_values[action[0], action[1]] = get_policy_value(
 			policy_lookup, state, player, action)
-	print(board_policy_values)
+	return board_policy_values

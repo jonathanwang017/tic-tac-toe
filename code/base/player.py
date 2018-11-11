@@ -31,6 +31,11 @@ class Strategy:
 class RandomStrategy(Strategy):
 	"""The RandomStrategy selects random moves"""
 
+	def __init__(self, player):
+		"""Set strategy name"""
+		super().__init__(player)
+		self.strategy_name = 'Random'
+
 	def select_move(self, board):
 		"""Select random empty space"""
 		open_spaces = board.get_open()
@@ -42,6 +47,11 @@ class MinimaxStrategy(Strategy):
 	The MinimaxStrategy selects the best move from a game tree search using
 	the minimax algorithm. This is implemented in strategies/minimax.py.
 	"""
+
+	def __init__(self, player):
+		"""Set strategy name"""
+		super().__init__(player)
+		self.strategy_name = 'Minimax'
 
 	def select_move(self, board):
 		"""Select optimal move using minimax on game tree"""
@@ -57,9 +67,10 @@ class ReinforcementLearningStrategy(Strategy):
 	def __init__(self, player):
 		"""Learn optimal policy"""
 		super().__init__(player)
+		self.strategy_name = 'Reinforcment Learning'
 		self.policy_lookup = dict()
 		learn_policy(self.policy_lookup)
 
 	def select_move(self, board):
 		"""Select move by looking up board state in policy lookup"""
-		return self.policy_lookup
+		return exploit_policy(self.policy_lookup, board, self.player)

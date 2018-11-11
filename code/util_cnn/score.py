@@ -15,7 +15,7 @@ board state.
 # directory to save plots - relative to analysis.py entry point
 images_dir = '../images/'
 # directory to save models - relative to analysis.py entry point
-model_dir = '../models/'
+model_dir = '../models/score_model'
 
 # training parameters
 num_train = 100000
@@ -126,7 +126,7 @@ def train_score_model():
 		optimizer.run(feed_dict={x: train_data, y: train_labels})
 
 	# save model
-	tf.saved_model.simple_save(sess, model_dir + 'score_model', 
+	tf.saved_model.simple_save(sess, model_dir, 
 		inputs={'x': x, 'y': y}, outputs={'y_pred': y_pred})
 
 	# plot trained weights
@@ -164,8 +164,8 @@ def train_score_model():
 def load_score_model():
 	"""Load graph of trained score model"""
 	with tf.Session(graph=tf.Graph()) as sess:
-		tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], 
-			model_dir + 'score_model')
+		tf.saved_model.loader.load(sess, 
+			[tf.saved_model.tag_constants.SERVING], model_dir)
 		graph = tf.get_default_graph()
 		x = graph.get_tensor_by_name('x:0')
 		y = graph.get_tensor_by_name('y:0')
@@ -179,7 +179,7 @@ def predict_score_model(data=None, labels=None):
 		data, labels = generate_score_data(1)
 
 	# use tf predictor api on trained model
-	predict_fn = tf.contrib.predictor.from_saved_model(model_dir + 'score_model')
+	predict_fn = tf.contrib.predictor.from_saved_model(model_dir)
 	y_pred = predict_fn({'x': data, 'y': labels})['y_pred']
 	turn = 0
 	for board, label, pred in zip(data, labels, y_pred):
