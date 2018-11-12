@@ -64,6 +64,7 @@ def minimax_alphabeta():
 	board = Board()
 	minimax_count = minimax_counter(1, board, prune=False)
 	alphabeta_count = minimax_counter(1, board)
+	print(minimax_count, alphabeta_count)
 	plt.bar([0, 1], [minimax_count, alphabeta_count])
 	plt.xticks([0, 1], ('Minimax', 'Alphabeta'))
 	plt.show()
@@ -93,3 +94,12 @@ def test_rl_policy():
 			print(visualize_policy(player2.policy_lookup, board, turn))
 			player2.play_move(board)
 			turn = 1
+
+def rl_policy_space():
+	"""Count number of total values (state, action, value) in policy""" 
+	player1 = ReinforcementLearningStrategy(1)
+	state_count = 0
+	for state in player1.policy_lookup.keys():
+		for action in player1.policy_lookup[state]:
+			state_count += 1
+	print(state_count)

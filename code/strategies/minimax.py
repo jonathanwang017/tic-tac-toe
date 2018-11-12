@@ -1,3 +1,6 @@
+import numpy as np
+import random
+
 """
 Search game tree and use minimax to determine the best move. This file 
 includes counter functionality to compare the search space of minimax 
@@ -24,8 +27,9 @@ def minimax(player, board):
 	if board.check_end(): # add depth constraint for non-final scores
 		return compute_score(board), None
 
-	# test all available moves
+	# test all available moves in random order
 	open_spaces = board.get_open()
+	random.shuffle(open_spaces)
 	open_scores = []
 	for move in open_spaces:
 		# try making move
@@ -55,8 +59,9 @@ def alphabeta(player, board, alpha=-float('inf'), beta=float('inf')):
 	elif player == 2:
 		best_score = float('inf')
 		optimizer = lambda score: score < best_score
-	# test all available moves
+	# test all available moves in random order
 	open_spaces = board.get_open()
+	random.shuffle(open_spaces)
 	best_move = None
 	for move in open_spaces:
 		# try making move

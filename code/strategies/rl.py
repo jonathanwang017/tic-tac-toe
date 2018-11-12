@@ -8,7 +8,8 @@ from base.board import *
 This file contains functions to learn an optimal policy using Q-learning.
 The game is played randomly and policy values are updated according to the
 rewards, where a reward of +1 is given for a player 1 win and a reward of -1
-for a player 2 win. All other states have a reward of 0.
+for a player 2 win. All other states have a reward of 0. The result is an action
+policy as well as a sort of data-driven score for each state and action.
 
 The game between two reinforcement strategy players will almost always
 be the same since the policy is saved and loaded and there is almost no
